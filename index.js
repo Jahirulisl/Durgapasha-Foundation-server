@@ -48,7 +48,17 @@ const menuCellection = client.db("foundation").collection("menu");
   const result = await menuCellection.find().toArray();
   res.send(result);
  })
-//for menu data input in server start
+//for menu data input in server end
+
+//for review data input in server start
+const reviewCellection = client.db("foundation").collection("review");
+         //data get
+ app.get('/review', async(req,res)=>{
+  const result = await reviewCellection.find().toArray();
+  res.send(result);
+ })
+
+//for review data input in server end
 
 app.get('/', (req, res) => {
   res.send('foundation is sitting')
