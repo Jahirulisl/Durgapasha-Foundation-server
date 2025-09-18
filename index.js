@@ -61,8 +61,12 @@ const reviewCellection = client.db("foundation").collection("review");
 //for review data input in server end
 
 //for cart data cellection start
-   const cartCollection = client.db("digital-restruant").collection("cart");
-
+   const cartCollection = client.db("foundation").collection("cart");
+          //carta data sent in client st
+  app.get('/carts', async(req,res)=>{
+    const result = await cartCollection.find().toArray();
+    res.send(result);
+  })
          //carts cellection
    app.post('/carts', async(req,res)=>{
     const cartItem =req.body;
