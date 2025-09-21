@@ -43,38 +43,59 @@ run().catch(console.dir);
 //for menu data input in server start
 const menuCellection = client.db("foundation").collection("menu");
 
-       //data get
- app.get('/menu', async(req,res)=>{
+//data get
+app.get('/menu', async (req, res) => {
   const result = await menuCellection.find().toArray();
   res.send(result);
- })
+})
 //for menu data input in server end
 
 //for review data input in server start
 const reviewCellection = client.db("foundation").collection("review");
-         //data get
- app.get('/review', async(req,res)=>{
+//data get
+app.get('/review', async (req, res) => {
   const result = await reviewCellection.find().toArray();
   res.send(result);
- })
+})
 
 //for review data input in server end
 
 //for cart data cellection start
-   const cartCollection = client.db("foundation").collection("cart");
-          //carta data sent in client st
-  app.get('/carts', async(req,res)=>{
-    const result = await cartCollection.find().toArray();
-    res.send(result);
-  })
-         //carts cellection
-   app.post('/carts', async(req,res)=>{
-    const cartItem =req.body;
-    const result = await cartCollection.insertOne(cartItem);
-    res.send(result);
-   })
-   //for cart data cellection end
+const cartCollection = client.db("foundation").collection("cart");
+//carta data sent in client st
+app.get('/carts', async (req, res) => {
+  const result = await cartCollection.find().toArray();
+  res.send(result);
+})
+//carts cellection
+app.post('/carts', async (req, res) => {
+  const cartItem = req.body;
+  const result = await cartCollection.insertOne(cartItem);
+  res.send(result);
+})
+//for cart data cellection end
 
+//fro make delete api start>
+const { ObjectId } = require('mongodb');
+
+app.delete('/carts/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    // ObjectId validation
+    let query;
+    if (ObjectId.isValid(id)) {
+      query = { _id: new ObjectId(id) };
+    } else {
+      query = { _id: id };  // string id handle
+    }
+    const result = await cartCollection.deleteOne(query);
+    res.send(result);
+  } catch (error) {
+    console.error("Delete error:", error.message);
+    res.status(500).send({ error: error.message });
+  }
+});
+//fro make delete api end>
 
 app.get('/', (req, res) => {
   res.send('foundation is sitting')
