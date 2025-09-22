@@ -97,6 +97,17 @@ app.delete('/carts/:id', async (req, res) => {
 });
 //fro make delete api end>
 
+//for make user data collection and store api start
+    const userCollection = client.db("foundation").collection("users");
+       //for api
+   app.post('/users',async (req, res)=>{
+    const user = req.body;
+    const result = await userCollection.insertOne(user);
+    res.send(result);
+   })    
+    //for make user data cellection store api end
+
+
 app.get('/', (req, res) => {
   res.send('foundation is sitting')
 });
