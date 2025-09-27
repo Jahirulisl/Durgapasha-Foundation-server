@@ -74,12 +74,22 @@ async function run() {
     app.post('/users', async (req, res) => {
       const user = req.body;
 
-      //for get apistart
+      //for user get api start
       app.get('/users', async (req, res) => {
         const result = await userCollection.find().toArray();
         res.send(result);
       });
-      //for get api end
+      //for user get api end
+
+      //for user delete api start
+      app.delete('/users/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await userCollection.deleteOne(query);
+        res.send(result);
+      })
+      //for user delete api end
+
 
       //you can do this many ways (1.email uniqe,2.upsert, 3.simple checking) str
       const query = { email: user.email };
