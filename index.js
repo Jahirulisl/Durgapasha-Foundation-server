@@ -12,7 +12,7 @@ app.use(express.json());
 
 //for mongo cennect start
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.i5ort.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -28,6 +28,65 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    //for user collection start
+    const userCollection = client.db("foundation").collection("users");
+    //for menu collection start
+    const menuCellection = client.db("foundation").collection("menu");
+    //for review collection start
+    const reviewCellection = client.db("foundation").collection("review");
+    //for cart collection start
+    const cartCollection = client.db("foundation").collection("cart");
+
+
+    //for menu data input in server start
+    //data get
+    app.get('/menu', async (req, res) => {
+      const result = await menuCellection.find().toArray();
+      res.send(result);
+    })
+    //for menu data input in server end
+
+    //for review data input in server start
+    //data get
+    app.get('/review', async (req, res) => {
+      const result = await reviewCellection.find().toArray();
+      res.send(result);
+    })
+    //for review data input in server end
+
+    //for cart data cellection start
+    //carta data sent in client st
+    app.get('/carts', async (req, res) => {
+      const result = await cartCollection.find().toArray();
+      res.send(result);
+    })
+    //carts cellection post api
+    app.post('/carts', async (req, res) => {
+      const cartItem = req.body;
+      const result = await cartCollection.insertOne(cartItem);
+      res.send(result);
+    })
+    //for cart data cellection end
+
+    //for make user data collection and store api start
+    //for api
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    })
+    //for make user data cellection store api end
+
+    //fro make cart delete api start>
+    app.delete('/carts/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
+      res.send(result);
+    })
+    //fro make delete api end>
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -39,74 +98,6 @@ async function run() {
 run().catch(console.dir);
 
 //for mongo cennect end
-
-//for menu data input in server start
-const menuCellection = client.db("foundation").collection("menu");
-
-//data get
-app.get('/menu', async (req, res) => {
-  const result = await menuCellection.find().toArray();
-  res.send(result);
-})
-//for menu data input in server end
-
-//for review data input in server start
-const reviewCellection = client.db("foundation").collection("review");
-//data get
-app.get('/review', async (req, res) => {
-  const result = await reviewCellection.find().toArray();
-  res.send(result);
-})
-
-//for review data input in server end
-
-//for cart data cellection start
-const cartCollection = client.db("foundation").collection("cart");
-//carta data sent in client st
-app.get('/carts', async (req, res) => {
-  const result = await cartCollection.find().toArray();
-  res.send(result);
-})
-//carts cellection
-app.post('/carts', async (req, res) => {
-  const cartItem = req.body;
-  const result = await cartCollection.insertOne(cartItem);
-  res.send(result);
-})
-//for cart data cellection end
-
-//fro make delete api start>
-const { ObjectId } = require('mongodb');
-
-app.delete('/carts/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    // ObjectId validation
-    let query;
-    if (ObjectId.isValid(id)) {
-      query = { _id: new ObjectId(id) };
-    } else {
-      query = { _id: id };  // string id handle
-    }
-    const result = await cartCollection.deleteOne(query);
-    res.send(result);
-  } catch (error) {
-    console.error("Delete error:", error.message);
-    res.status(500).send({ error: error.message });
-  }
-});
-//fro make delete api end>
-
-//for make user data collection and store api start
-    const userCollection = client.db("foundation").collection("users");
-       //for api
-   app.post('/users',async (req, res)=>{
-    const user = req.body;
-    const result = await userCollection.insertOne(user);
-    res.send(result);
-   })    
-    //for make user data cellection store api end
-
 
 app.get('/', (req, res) => {
   res.send('foundation is sitting')
