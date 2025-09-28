@@ -81,7 +81,7 @@ async function run() {
       });
       //for user get api end
       //make user admin start
-     app.path('users/admin/:id', async (req, res) =>{
+     app.patch('/users/admin/:id', async (req, res) =>{
       const id = req.params.id;
       const filter = { _id: new ObjectId(id)};
       const updateDoc = {
@@ -89,7 +89,7 @@ async function run() {
           role: 'admin'
         }
       }
-      const result = await userCollection.updateDoc(filter,updateDoc)
+      const result = await userCollection.updateOne(filter,updateDoc)
       res.send(result);
      })
       //make user admin end
