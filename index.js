@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
- //make jswon token start paret 1
+//make jswon token start paret 1
 const jwt = require('jsonwebtoken');
 //make jswon token end paret 1 note: upora const cors ar pora
 
@@ -36,9 +36,9 @@ async function run() {
     //for user collection start
     const userCollection = client.db("foundation").collection("users");
     //for menu collection start
-    const menuCellection = client.db("foundation").collection("menu");
+    const menuCollection = client.db("foundation").collection("menu");
     //for review collection start
-    const reviewCellection = client.db("foundation").collection("review");
+    const reviewCollection = client.db("foundation").collection("review");
     //for cart collection start
     const cartCollection = client.db("foundation").collection("cart");
 
@@ -46,7 +46,7 @@ async function run() {
     //for menu data input in server start
     //data get
     app.get('/menu', async (req, res) => {
-      const result = await menuCellection.find().toArray();
+      const result = await menuCollection.find().toArray();
       res.send(result);
     })
     //for menu data input in server end
@@ -54,24 +54,24 @@ async function run() {
     //for review data input in server start
     //data get
     app.get('/review', async (req, res) => {
-      const result = await reviewCellection.find().toArray();
+      const result = await reviewCollection.find().toArray();
       res.send(result);
     })
     //for review data input in server end
 
-    //for cart data cellection start
+    //for cart data collection start
     //carta data sent in client st
     app.get('/carts', async (req, res) => {
       const result = await cartCollection.find().toArray();
       res.send(result);
     })
-    //carts cellection post api
+    //carts celloction post api
     app.post('/carts', async (req, res) => {
       const cartItem = req.body;
       const result = await cartCollection.insertOne(cartItem);
       res.send(result);
     })
-    //for cart data cellection end
+    //for cart data collection end
 
     //for make user data collection and store api start
     //for api
@@ -89,15 +89,49 @@ async function run() {
       const result = await userCollection.insertOne(user);
       res.send(result);
     })
-    //for make user data cellection store api end
+    //for make user data collection store api end
 
 
+    //for user get api end
+    //make middle weres for varify token start
+    const verifyToken = (req, res, next) => {
+      console.log('inside verify token', req.headers.authorization);
+      if (!req.headers.authorization) {
+        return res.status(401).send({ message: 'forbidden access' });
+      }
+      const token = req.headers.authorization.split(' ')[1];
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+          return res.status(401).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded;
+        next();
+      })
+
+    }
+    //make middle weres for verify token end
     //for user get api start
-    app.get('/users', async (req, res) => {
+    app.get('/users', verifyToken, async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
     });
-    //for user get api end
+
+    //for get user admin api start>
+    app.get('/users/admin/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: 'unauthorized access' })
+      }
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === 'admin';
+      }
+      res.send({ admin });
+    })
+    //for get user admin api end>
+
 
     //make user admin start
     app.patch('/users/admin/:id', async (req, res) => {
@@ -131,32 +165,12 @@ async function run() {
     //fro make delete api end>
 
     //for jwt token api start 2
-    app.post('/jwt',async(req, res)=>{
-    const user = req.body;
-    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1h'});
-    res.send({token});
-  })
+    app.post('/jwt', async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+      res.send({ token });
+    })
     //for jwt token api end 2
-
-    //make middle weres for varify token start
-    const verifyToken = (req, res, next) => {
-      console.log('inside verify token',req.headers.authorization);
-      if(!req.headers.authorization){
-        return res.status(401).send({message: 'forbidden access'});
-      }
-      const token = req.headers.authorization.split(' ')[1] ;
-      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
-        if(err){
-          return res.status(401).send({message: 'forbidden access'})
-        }
-       req.decoded = decoded;
-       next();
-      })
-      
-    }
-    //make middle weres for verify token end
-
-
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
