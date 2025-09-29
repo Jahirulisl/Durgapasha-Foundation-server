@@ -74,35 +74,6 @@ async function run() {
     app.post('/users', async (req, res) => {
       const user = req.body;
 
-      //for user get api start
-      app.get('/users', async (req, res) => {
-        const result = await userCollection.find().toArray();
-        res.send(result);
-      });
-      //for user get api end
-      //make user admin start
-     app.patch('/users/admin/:id', async (req, res) =>{
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id)};
-      const updateDoc = {
-        $set: {
-          role: 'admin'
-        }
-      }
-      const result = await userCollection.updateOne(filter,updateDoc)
-      res.send(result);
-     })
-      //make user admin end
-      //for user delete api start
-      app.delete('/users/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await userCollection.deleteOne(query);
-        res.send(result);
-      })
-      //for user delete api end
-
-
       //you can do this many ways (1.email uniqe,2.upsert, 3.simple checking) str
       const query = { email: user.email };
       const existingUser = await userCollection.findOne(query);
@@ -115,6 +86,36 @@ async function run() {
       res.send(result);
     })
     //for make user data cellection store api end
+
+
+    //for user get api start
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+    //for user get api end
+
+    //make user admin start
+    app.patch('/users/admin/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'admin'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updateDoc)
+      res.send(result);
+    })
+    //make user admin end
+    //for user delete api start
+    app.delete('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
+    //for user delete api end
 
     //fro make cart delete api start>
     app.delete('/carts/:id', async (req, res) => {
