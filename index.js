@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
-const cors = require('cors')
+const cors = require('cors');
+ //make jswon token start paret 1
+const jwt = require('jsonwebtoken');
+//make jswon token end paret 1 note: upora const cors ar pora
+
 //for .env import
 require('dotenv').config();
 
