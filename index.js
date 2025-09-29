@@ -130,6 +130,15 @@ async function run() {
     })
     //fro make delete api end>
 
+    //for jwt token api start 2
+    app.post('/jwt',async(req, res)=>{
+    const user = req.body;
+    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1h'});
+    res.send({token});
+  })
+    //for jwt token api end 2
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
