@@ -87,6 +87,26 @@ async function run() {
     })
     //add menu post in server end
 
+    //make menu update api  to get soecpic id start
+    app.get('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await menuCollection.findOne(query);
+      res.send(result);
+    })
+    //make menu update api  to get soecpic id end
+
+    //make menu delite api start
+    app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+       console.log("Delete request id:", id, "length:", id.length);
+      const query = { _id: id };
+      const result = await menuCollection.deleteOne(query);
+      console.log(result)
+      res.send(result);
+    })
+    //make menu delite api start
+
 
     //for review data input in server start
     //data get
@@ -127,7 +147,6 @@ async function run() {
       res.send(result);
     })
     //for make user data collection store api end
-
 
     //for user get api end
 
