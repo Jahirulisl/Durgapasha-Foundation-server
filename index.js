@@ -97,14 +97,23 @@ async function run() {
     //make menu update api  to get soecpic id end
 
     //make menu delite api start
-    app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
-      const id = req.params.id;
-       console.log("Delete request id:", id, "length:", id.length);
-      const query = { _id: id };
-      const result = await menuCollection.deleteOne(query);
-      console.log(result)
-      res.send(result);
-    })
+    app.delete('/menu/:id', async (req, res) => {
+  try {
+    const id = req.params.id;   // URL থেকে id নিচ্ছি
+    const query = { _id: id };  // ObjectId নয়, string আকারে
+    const result = await menuCollection.deleteOne(query);
+
+    if (result.deletedCount > 0) {
+      res.send(result); // সফলভাবে delete হলে
+    } else {
+      res.status(404).send({ message: 'Item not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
+});
+
     //make menu delite api start
 
 
