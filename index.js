@@ -1,4 +1,3 @@
-
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -81,7 +80,7 @@ async function run() {
     })
     //for menu data input in server end
     //add menu post in server start
-    app.post('/menu', verifyToken, verifyAdmin, async (req, res) => {
+    app.post('/menu',verifyToken,verifyAdmin,async (req, res) => {
       const item = req.body;
       const result = await menuCollection.insertOne(item)
       res.send(result);
@@ -97,29 +96,16 @@ async function run() {
     })
     //make menu update api  to get soecpic id end
 
-    // make menu delete api start
+    //make menu delite api start
     app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
-      console.log("Delete request id:", id, "length:", id.length);
-
-      // ✅ Convert string id → MongoDB ObjectId
-      const query = { _id: new ObjectId(id) };
-
-      try {
-        const result = await menuCollection.deleteOne(query);
-        console.log("Delete result:", result);
-
-        if (result.deletedCount > 0) {
-          res.send({ success: true, message: "Menu item deleted successfully.", result });
-        } else {
-          res.send({ success: false, message: "No item found with that ID." });
-        }
-      } catch (error) {
-        console.error("Error deleting menu item:", error);
-        res.status(500).send({ success: false, message: "Internal server error." });
-      }
-    });
-    // make menu delete api end
+       console.log("Delete request id:", id, "length:", id.length);
+      const query = { _id: id };
+      const result = await menuCollection.deleteOne(query);
+      console.log(result)
+      res.send(result);
+    })
+    //make menu delite api start
 
 
     //for review data input in server start
