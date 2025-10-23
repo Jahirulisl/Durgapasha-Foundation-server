@@ -80,7 +80,7 @@ async function run() {
     })
     //for menu data input in server end
     //add menu post in server start
-    app.post('/menu',verifyToken,verifyAdmin,async (req, res) => {
+    app.post('/menu', verifyToken, verifyAdmin, async (req, res) => {
       const item = req.body;
       const result = await menuCollection.insertOne(item)
       res.send(result);
@@ -98,23 +98,32 @@ async function run() {
 
     //make menu delite api start
     app.delete('/menu/:id', async (req, res) => {
-  try {
-    const id = req.params.id;   // URL থেকে id নিচ্ছি
-    const query = { _id: id };  // ObjectId নয়, string আকারে
-    const result = await menuCollection.deleteOne(query);
+      try {
+        const id = req.params.id;   // URL থেকে id নিচ্ছি
+        const query = { _id: id };  // ObjectId নয়, string আকারে
+        const result = await menuCollection.deleteOne(query);
 
-    if (result.deletedCount > 0) {
-      res.send(result); // সফলভাবে delete হলে
-    } else {
-      res.status(404).send({ message: 'Item not found' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: error.message });
-  }
-});
+        if (result.deletedCount > 0) {
+          res.send(result); // সফলভাবে delete হলে
+        } else {
+          res.status(404).send({ message: 'Item not found' });
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: error.message });
+      }
+    });
+    //make menu delite api end
 
-    //make menu delite api start
+    //make menu update api  to get specific id start
+    app.get('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await menuCollection.findOne(query);
+      res.send(result);
+    })
+    //make menu update api  to get specific ID end
+
 
 
     //for review data input in server start
